@@ -93,3 +93,100 @@ end
 
 
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def insertStocksData(industries_id,industries_url)
+#	puts sector_id + ' ' + 
+
+
+if File.file? 'output.html'
+run 'rm output.html', ''
+end
+
+
+run 'curl ' + industries_url + '>output.html', ''
+sleep(0.2)
+
+
+if File.file? 'output.html'
+	fileString=""
+	file = File.open("output.html")
+	file.each {|line|
+	fileString << line
+	}
+end
+
+
+
+
+
+=begin
+href="http://us.rd.yahoo.com/finance/industry/quote/colist/\*http://biz.yahoo.com/([^>]+)>([^<]+)</a> \(<a\nhref="http://us.rd.yahoo.com/finance/industry/quote/colist/\*([^"]+)"
+=end
+
+
+
+
+arry1=fileString.scan(/href="http:\/\/us.rd.yahoo.com\/finance\/industry\/quote\/colist\/\*http:\/\/biz.yahoo.com\/([^>]+)>([^<]+)<\/a> \(<a\nhref="http:\/\/us.rd.yahoo.com\/finance\/industry\/quote\/colist\/\*([^"]+)"/).to_a
+
+#stockName=arry1[0][1]
+
+
+=begin
+arry1[0][0] =~ /\/([^\/]+)\.html/
+stockSymbol=$1
+stockName=arry1[0][1].gsub(/\n/,' ')
+stockUrl=arry1[0][2]
+
+#puts $1 + " " + arry1[0][1].gsub(/\n/,' ') + " " + arry1[0][2]
+
+strSql= 'insert into Stocks (industry_id,stock_symbol,stock_name,stock_url) values ('
+strSql=strSql + industries_id + ',\'' + stockSymbol + '\',\'' + stockName + '\',\'' + stockUrl + '\')'
+
+puts strSql
+
+=end
+
+
+
+
+
+
+for element in arry1
+
+element[0] =~ /\/([^\/]+)\.html/
+
+stockSymbol=$1
+stockName=element[1].gsub(/\n/,' ')
+stockName=stockName.gsub('\'','\'\'')
+stockUrl=element[2]
+
+strSql= 'insert into stocks (industry_id,stock_symbol,stock_name,stock_url) values ('
+strSql=strSql + industries_id + ',\'' + stockSymbol + '\',\'' + stockName + '\',\'' + stockUrl + '\')'
+SqlExec(strSql)
+
+sleep(0.2)
+
+
+
+
+end
+
+
+
+
+
+
+end
